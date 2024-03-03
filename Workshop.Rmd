@@ -1,27 +1,62 @@
 ---
-title: "Figure 4EFG"
+title: "Reproducing Garg et al.'s Figures 4E & 4F"
 author: "Tommy Lu"
 date: "2024-02-26"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
-```{r}
-# setwd("Source_Data")
+Garg et al.'s 2021 study identified a gene signature, Cam_121, associated with distant metastases of melanoma and patient survival outcomes. The reproduced figures represent levels of expression for Cam_121 vs a total immune score.
 
+```{r, include = FALSE}
 library("ggplot2")
-library("readxl")
-library("ggpubr")
-library("RColorBrewer")
+library("readxl") #import excel file
+library("ggpubr") #publication style ggplot figures
+library("RColorBrewer") 
 library("robustbase")
-library("cowplot")
-list.files()
+library("cowplot") #plot_grid()
 
 data <- readxl::read_excel("Source_Data/Figs_4E_4F_4G.xlsx",1)
+```
 
-View(data)
-colnames(data)
+The code found in this repository at `\scripts\ImmuneCellAnalysis.Rmd` produces the multiple figures. A select figure includes Figure 4E, shown below.
 
-g1<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
+```{r, message = FALSE}
+g0<- ggplot(data, aes(x=Cam_121,
+                      y=ImmuneCell,
+                      color=EventMet))+
+  geom_point(alpha = 0.5)+
+  xlab("Weighted Cam_121 score (standardized)")+
+  ylab("All immune cell-types")+
+  scale_color_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
+  geom_smooth(method = "lm", alpha = .15, aes(fill = EventMet))+
+  scale_fill_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
+  theme(text=element_text(size=7, 
+                          family="sans"),
+        legend.position = "none")+
+  ggpubr::stat_cor(aes(color = EventMet),
+                   label.x = -0.75,
+                   label.y =c(max(data$ImmuneCell)+0.45, max(data$ImmuneCell)+0.1),
+                   size = 2.5,
+                   family="sans")+
+  ylim(c(min(data$ImmuneCell),
+         max(data$ImmuneCell)+0.5))+
+  coord_fixed()
+
+g0
+```
+
+To make these figures to a publication standard, the following changes were executed:
+- increased text size
+- added legend
+- removed gridlines and grey background
+- introduced axis lines
+
+```{r, message = FALSE}
+g1<- ggplot(data, aes(x=Cam_121,
+                      y=ImmuneCell,
+                      color=EventMet))+
   geom_point(alpha = 0.4, size = 1)+
   theme(panel.grid = element_blank(), 
         panel.background = element_blank(), 
@@ -36,21 +71,13 @@ g1<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
                    label.x = -0.75, label.y =c(max(data$ImmuneCell)+0.15, 
                                                max(data$ImmuneCell)), size = 2.5, family="sans")+
   ylim(c(min(8), max(10.5)+0.5))
+
 g1 
+```
 
-g3<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
-  geom_point(alpha = 0.5)+
-  xlab("Weighted Cam_121 score (standardized)")+
-  ylab("All immune cell-types")+
-  scale_color_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
-  geom_smooth(method = "lm", alpha = .15, aes(fill = EventMet))+
-  scale_fill_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
-  theme(text=element_text(size=7,  family="sans"), legend.position = "none")+
-  ggpubr::stat_cor(aes(color = EventMet), label.x = -0.75, label.y =c(max(data$ImmuneCell)+0.45, max(data$ImmuneCell)+0.1), size = 2.5, family="sans")+
-  ylim(c(min(data$ImmuneCell), max(data$ImmuneCell)+0.5))+
-  coord_fixed()
-g3
+Figure 4F also employs the same set of data, but reconfigures the graph to a density plot to provide further nuance to analysis than just a scatter plot. The following figure is a revised reproduction of the plot.
 
+```{r, message = FALSE}
 g2<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
   #geom_point()+
   theme(panel.grid = element_blank(), 
@@ -63,12 +90,10 @@ g2<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
   theme(text=element_text(size=10,  family="sans"), legend.position = "top")+
   ylim(c(min(8), max(10.5)+0.5))
 g2
-
-plot_grid(g1,g2)
-
-#changes: text size, legand, graph size, scatter plot occupancy/size, removed gridlines and grey background and introduce axis lines
-
-
 ```
 
-Extra words
+The final reproduced figure of the Cam_121 vs immune scores with both figures:
+
+```{r, message = FALSE}
+plot_grid(g1,g2)
+```
