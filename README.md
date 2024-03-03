@@ -4,6 +4,4 @@
 
 Code to reproduce the results in the [paper](https://rdcu.be/cf4eg).
 
-
-
-
+Forked to reproduce results for Data Analysis and Visualisation (SOMS4101). `Workshop.Rmd` locally reproduces select figures from the paper step-wise.

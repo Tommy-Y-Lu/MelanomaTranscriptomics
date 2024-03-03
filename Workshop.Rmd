@@ -1,0 +1,74 @@
+---
+title: "Figure 4EFG"
+author: "Tommy Lu"
+date: "2024-02-26"
+output: html_document
+---
+
+```{r}
+# setwd("Source_Data")
+
+library("ggplot2")
+library("readxl")
+library("ggpubr")
+library("RColorBrewer")
+library("robustbase")
+library("cowplot")
+list.files()
+
+data <- readxl::read_excel("Source_Data/Figs_4E_4F_4G.xlsx",1)
+
+View(data)
+colnames(data)
+
+g1<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
+  geom_point(alpha = 0.4, size = 1)+
+  theme(panel.grid = element_blank(), 
+        panel.background = element_blank(), 
+        axis.line = element_line())+
+  xlab("Weighted Cam_121 score (standardized)")+
+  ylab("All immune cell-types")+
+  scale_color_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
+  geom_smooth(method = "lm", alpha = .15, aes(fill = EventMet))+
+  scale_fill_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
+  theme(text=element_text(size=10,  family="sans"), legend.position = "top")+
+  ggpubr::stat_cor(aes(color = EventMet), 
+                   label.x = -0.75, label.y =c(max(data$ImmuneCell)+0.15, 
+                                               max(data$ImmuneCell)), size = 2.5, family="sans")+
+  ylim(c(min(8), max(10.5)+0.5))
+g1 
+
+g3<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
+  geom_point(alpha = 0.5)+
+  xlab("Weighted Cam_121 score (standardized)")+
+  ylab("All immune cell-types")+
+  scale_color_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
+  geom_smooth(method = "lm", alpha = .15, aes(fill = EventMet))+
+  scale_fill_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
+  theme(text=element_text(size=7,  family="sans"), legend.position = "none")+
+  ggpubr::stat_cor(aes(color = EventMet), label.x = -0.75, label.y =c(max(data$ImmuneCell)+0.45, max(data$ImmuneCell)+0.1), size = 2.5, family="sans")+
+  ylim(c(min(data$ImmuneCell), max(data$ImmuneCell)+0.5))+
+  coord_fixed()
+g3
+
+g2<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
+  #geom_point()+
+  theme(panel.grid = element_blank(), 
+        panel.background = element_blank(), 
+        axis.line = element_line())+
+  xlab("Weighted Cam_121 score (standardized)")+
+  ylab("All immune cell-types")+
+  scale_color_manual(values = c("#1F78B4", "#E31A1C"), name = "Distant\nmetastases")+
+  geom_density_2d(alpha = 0.75) +
+  theme(text=element_text(size=10,  family="sans"), legend.position = "top")+
+  ylim(c(min(8), max(10.5)+0.5))
+g2
+
+plot_grid(g1,g2)
+
+#changes: text size, legand, graph size, scatter plot occupancy/size, removed gridlines and grey background and introduce axis lines
+
+
+```
+
+Extra words
