@@ -1,10 +1,7 @@
 ---
 title: "Reproducing Garg et al.'s Figures 4E & 4F"
 author: "Tommy Lu"
-date: "2024-02-26"
-output:
-  html_document:
-    code_folding: hide
+output: pdf_document
 ---
 
 Garg et al.'s 2021 study identified a gene signature, Cam_121, associated with distant metastases of melanoma and patient survival outcomes. The reproduced figures represent levels of expression for Cam_121 vs a total immune score.
@@ -17,7 +14,7 @@ library("RColorBrewer")
 library("robustbase")
 library("cowplot") #plot_grid()
 
-data <- readxl::read_excel("Source_Data/Figs_4E_4F_4G.xlsx",1)
+data <- readxl::read_excel("Figs_4E_4F_4G.xlsx",1)
 ```
 
 The code found in this repository at `\scripts\ImmuneCellAnalysis.Rmd` produces the multiple figures. A select figure includes Figure 4E, shown below.
@@ -38,16 +35,15 @@ g0<- ggplot(data, aes(x=Cam_121,
   ggpubr::stat_cor(aes(color = EventMet),
                    label.x = -0.75,
                    label.y =c(max(data$ImmuneCell)+0.45, max(data$ImmuneCell)+0.1),
-                   size = 2.5,
-                   family="sans")+
-  ylim(c(min(data$ImmuneCell),
-         max(data$ImmuneCell)+0.5))+
+                   size = 2.5,family="sans")+
+  ylim(c(min(data$ImmuneCell),max(data$ImmuneCell)+0.5))+
   coord_fixed()
 
 g0
 ```
 
 To make these figures to a publication standard, the following changes were executed:
+
 - increased text size
 - added legend
 - removed gridlines and grey background
@@ -75,6 +71,8 @@ g1<- ggplot(data, aes(x=Cam_121,
 g1 
 ```
 
+\newpage
+
 Figure 4F also employs the same set of data, but reconfigures the graph to a density plot to provide further nuance to analysis than just a scatter plot. The following figure is a revised reproduction of the plot.
 
 ```{r, message = FALSE}
@@ -89,11 +87,24 @@ g2<- ggplot(data, aes(x=Cam_121, y=ImmuneCell, color=EventMet))+
   geom_density_2d(alpha = 0.75) +
   theme(text=element_text(size=10,  family="sans"), legend.position = "top")+
   ylim(c(min(8), max(10.5)+0.5))
+
 g2
 ```
+
+\newpage
 
 The final reproduced figure of the Cam_121 vs immune scores with both figures:
 
 ```{r, message = FALSE}
-plot_grid(g1,g2)
+g3<- plot_grid(g1,g2)
+
+g3
 ```
+
+```{r, include = FALSE}
+ggsave("Fig4E.png", plot = g1)
+ggsave("Fig4F.png", plot = g2)
+ggsave("GridFig4EF.png", plot = g3)
+```
+
+
